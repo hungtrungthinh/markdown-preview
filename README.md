@@ -1,86 +1,208 @@
-# Markdown Preview - Live Editor
+# Markdown Preview - Full Stack Application
 
-A beautiful, modern markdown preview editor with real-time rendering, built with Rust backend and Next.js 15 frontend.
+A beautiful, real-time markdown preview editor built with Rust (Axum) backend and Next.js 15 frontend.
 
 ## Features
 
-- ✨ **Real-time preview** - See changes instantly as you type
-- 🎨 **Beautiful syntax highlighting** - Code blocks with syntax highlighting
-- 📱 **Responsive design** - Works perfectly on all devices
-- ⚡ **Fast rendering** - Powered by Rust backend for optimal performance
-- 🔧 **Customizable themes** - Toggle between light and dark modes
-- 📁 **File operations** - Upload, download, and copy markdown files
-- 🎯 **Modern UI** - Built with Fluent UI 2 and Tailwind CSS
-
-## Tech Stack
-
-### Backend
-- **Rust** - High-performance backend
-- **Axum** - Modern web framework
-- **Markdown** - Markdown parsing and rendering
-- **Syntect** - Syntax highlighting
-
-### Frontend
-- **Next.js 15** - React framework with App Router
-- **TypeScript** - Type-safe development
-- **Fluent UI 2** - Microsoft's design system
-- **Tailwind CSS** - Utility-first CSS framework
-- **React Markdown** - Markdown rendering
-- **Lucide React** - Beautiful icons
+- ✨ **Real-time markdown preview**
+- 🎨 **Beautiful syntax highlighting**
+- 📱 **Responsive design**
+- ⚡ **Fast rendering with Rust backend**
+- 🔧 **Dark/Light mode toggle**
+- 📤 **Export to PDF and Word**
+- 🐳 **Docker support**
+- 🚀 **Easy deployment**
+- ☁️ **Dokploy compatible**
 
 ## Quick Start
 
-### Prerequisites
+### Using Deployment Script (Recommended)
+
+The easiest way to deploy the entire application:
+
+```bash
+# Development environment
+./deploy.sh dev
+
+# Staging environment
+./deploy.sh staging
+
+# Production environment
+./deploy.sh production
+
+# Build only
+./deploy.sh build
+
+# Run tests
+./deploy.sh test
+
+# Check status
+./deploy.sh status
+
+# Cleanup
+./deploy.sh cleanup
+```
+
+### Dokploy Deployment
+
+For Dokploy deployment, set the environment variable and run:
+
+```bash
+# Enable Dokploy mode
+export DOKPLOY_ENABLED=true
+export DOKPLOY_APP_NAME=your-app-name
+export DOKPLOY_DOMAIN=your-domain.com
+
+# Deploy to production
+./deploy.sh production
+```
+
+This will create a `dokploy.yaml` configuration file ready for deployment.
+
+### Manual Setup
+
+#### Prerequisites
+
 - Rust (latest stable)
-- Node.js 18+ and npm
-- Git
+- Node.js 18+
+- Docker & Docker Compose (optional for Dokploy)
+- npm or yarn
 
-### Installation
+#### Backend Setup
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd markdown-preview
-   ```
+```bash
+# Build and run backend
+cargo build --release
+cargo run
+```
 
-2. **Start the Rust backend**
-   ```bash
-   # Install dependencies and run
-   cargo run
-   ```
-   The backend will start on `http://localhost:3001`
+Backend will be available at `http://localhost:3001`
 
-3. **Start the Next.js frontend**
-   ```bash
-   # Navigate to frontend directory
-   cd frontend
-   
-   # Install dependencies
-   npm install
-   
-   # Start development server
-   npm run dev
-   ```
-   The frontend will start on `http://localhost:3000`
+#### Frontend Setup
 
-4. **Open your browser**
-   Navigate to `http://localhost:3000` to start using the markdown editor!
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Frontend will be available at `http://localhost:3000`
+
+#### Docker Setup
+
+```bash
+# Build and run with Docker Compose
+docker-compose up --build
+```
+
+## Deployment Script Commands
+
+| Command | Description |
+|---------|-------------|
+| `dev` | Start development servers (backend + frontend) |
+| `staging` | Deploy to staging environment |
+| `production` | Deploy to production environment |
+| `build` | Build backend and frontend |
+| `test` | Run all tests |
+| `docker` | Build Docker images |
+| `deploy` | Deploy with Docker Compose |
+| `status` | Show deployment status |
+| `cleanup` | Clean up build artifacts |
+
+## Environment Variables
+
+Create a `.env` file based on `env.example`:
+
+```bash
+# Backend
+RUST_LOG=info
+RUST_ENV=production
+BACKEND_PORT=3001
+
+# Frontend
+NODE_ENV=production
+NEXT_PUBLIC_API_URL=http://localhost:3001
+FRONTEND_PORT=3000
+
+# Docker
+DOCKER_REGISTRY=
+DOCKER_IMAGE_TAG=latest
+
+# Dokploy
+DOKPLOY_ENABLED=false
+DOKPLOY_APP_NAME=markdown-preview
+DOKPLOY_DOMAIN=
+```
+
+## Dokploy Configuration
+
+The project includes a `dokploy.yaml` file for easy deployment to Dokploy:
+
+```yaml
+app: markdown-preview
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+domains:
+  - markdown-preview.dokploy.com
+```
+
+## API Endpoints
+
+- `GET /health` - Health check
+- `POST /api/convert` - Convert markdown to HTML
+
+## Project Structure
+
+```
+markdown-preview/
+├── src/                    # Rust backend source
+├── frontend/              # Next.js frontend
+│   ├── app/              # App router pages
+│   ├── components/       # React components
+│   └── ...
+├── docker-compose.yml    # Docker services
+├── dokploy.yaml         # Dokploy configuration
+├── deploy.sh            # Deployment script
+├── nginx.conf           # Nginx configuration
+└── ...
+```
 
 ## Development
 
 ### Backend Development
+
 ```bash
-# Run in development mode with hot reload
+# Run with hot reload
 cargo watch -x run
 
 # Run tests
 cargo test
 
-# Build for production
-cargo build --release
+# Check formatting
+cargo fmt
+
+# Lint code
+cargo clippy
 ```
 
 ### Frontend Development
+
 ```bash
 cd frontend
 
@@ -93,91 +215,52 @@ npm run dev
 # Build for production
 npm run build
 
-# Start production server
-npm start
+# Run tests
+npm test
 
-# Run linting
+# Lint code
 npm run lint
 ```
 
-## API Endpoints
+## Docker Deployment
 
-### POST `/api/convert`
-Convert markdown to HTML
+### Production Deployment
 
-**Request Body:**
-```json
-{
-  "content": "# Hello World\n\nThis is **markdown** content.",
-  "theme": "light" // optional: "light" or "dark"
-}
+```bash
+# Build and deploy
+./deploy.sh production
+
+# Or manually
+docker-compose up --build -d
 ```
 
-**Response:**
-```json
-{
-  "html": "<h1>Hello World</h1><p>This is <strong>markdown</strong> content.</p>",
-  "error": null
-}
+### Development with Docker
+
+```bash
+# Start development environment
+docker-compose -f docker-compose.dev.yml up
 ```
 
-### GET `/health`
-Health check endpoint
+## Monitoring
 
-**Response:**
-```json
-{
-  "status": "healthy",
-  "service": "markdown-preview-backend"
-}
-```
+The application includes health checks and monitoring:
 
-## Project Structure
-
-```
-markdown-preview/
-├── src/                    # Rust backend source
-│   └── main.rs            # Main server file
-├── frontend/              # Next.js frontend
-│   ├── app/               # App Router pages
-│   │   ├── layout.tsx     # Root layout
-│   │   ├── page.tsx       # Main page
-│   │   └── globals.css    # Global styles
-│   ├── package.json       # Frontend dependencies
-│   ├── next.config.js     # Next.js configuration
-│   ├── tailwind.config.js # Tailwind CSS configuration
-│   └── tsconfig.json      # TypeScript configuration
-├── Cargo.toml             # Rust dependencies
-└── README.md              # This file
-```
-
-## Features in Detail
-
-### Real-time Preview
-The editor provides instant feedback as you type, with a 300ms debounce to ensure smooth performance.
-
-### Syntax Highlighting
-Code blocks are automatically highlighted based on the language specified in the markdown.
-
-### File Operations
-- **Upload**: Drag and drop or click to upload `.md` files
-- **Download**: Save your current markdown as a file
-- **Copy**: Copy markdown content to clipboard
-
-### Theme Support
-Toggle between light and dark themes with the switch in the header.
-
-### Responsive Design
-The interface adapts beautifully to different screen sizes, from mobile to desktop.
+- Backend health: `http://localhost:3001/health`
+- Frontend status: `http://localhost:3000`
+- Docker status: `./deploy.sh status`
 
 ## Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Run tests: `./deploy.sh test`
+5. Submit a pull request
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see LICENSE file for details.
+
+## Support
+
+For issues and questions, please open an issue on GitHub.

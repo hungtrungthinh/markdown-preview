@@ -1,33 +1,27 @@
-version: '3.8'
+app: markdown-preview
 
 services:
   backend:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: markdown-preview-backend
     ports:
       - "3001:3001"
     environment:
       - RUST_LOG=info
       - RUST_ENV=production
-    volumes:
-      - ./logs:/app/logs
-    restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
-    networks:
-      - markdown-preview-network
+    restart: unless-stopped
 
   frontend:
     build:
       context: .
       dockerfile: frontend/Dockerfile
-    container_name: markdown-preview-frontend
     ports:
       - "3000:3000"
     environment:
@@ -43,28 +37,12 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-    networks:
-      - markdown-preview-network
 
-  nginx:
-    image: nginx:alpine
-    container_name: markdown-preview-nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./ssl:/etc/nginx/ssl:ro
-    depends_on:
-      - frontend
-      - backend
-    restart: unless-stopped
-    networks:
-      - markdown-preview-network
+domains:
+  - markdown-preview.dokploy.com
 
-networks:
-  markdown-preview-network:
-    driver: bridge
-
-volumes:
-  logs: 
+env:
+  - NODE_ENV=production
+  - RUST_ENV=production
+  - BACKEND_PORT=3001
+  - FRONTEND_PORT=3000 
