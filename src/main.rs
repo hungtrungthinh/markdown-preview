@@ -5,7 +5,6 @@ use axum::{
     routing::{get, post},
     Router,
 };
-use axum_extra::routing::SpaRouter;
 use pulldown_cmark::{html, Options, Parser};
 use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
