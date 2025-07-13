@@ -181,9 +181,3 @@ The interface adapts beautifully to different screen sizes, from mobile to deskt
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Inspired by [markdownlivepreview.com](https://markdownlivepreview.com/)
-- Built with modern web technologies for optimal performance
-- Uses Microsoft Fluent UI 2 for consistent design language 
