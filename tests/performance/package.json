@@ -1,0 +1,17 @@
+{
+    "name": "markdown-preview-performance-tests",
+    "version": "1.0.0",
+    "description": "Performance testing for Markdown Preview API",
+    "scripts": {
+        "test": "node load-test.js",
+        "test:light": "node load-test.js --light",
+        "test:heavy": "node load-test.js --heavy",
+        "test:stress": "node stress-test.js"
+    },
+    "dependencies": {
+        "autocannon": "^7.15.0"
+    },
+    "devDependencies": {
+        "artillery": "^2.0.0"
+    }
+}

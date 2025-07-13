@@ -1,0 +1,35 @@
+# Development Dockerfile with hot reload
+
+FROM node:18-alpine
+
+# Install Rust
+RUN apk add --no-cache \
+    curl \
+    build-base \
+    && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+# Add Rust to PATH
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Set working directory
+WORKDIR /app
+
+# Install concurrently for running both services
+RUN npm install -g concurrently
+
+# Copy package files
+COPY package*.json ./
+COPY frontend/package*.json ./frontend/
+
+# Install dependencies
+RUN npm install
+RUN cd frontend && npm install
+
+# Copy source code
+COPY . .
+
+# Expose ports
+EXPOSE 3000 3001
+
+# Start development servers
+CMD ["npm", "run", "dev"] 

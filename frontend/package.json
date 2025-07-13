@@ -1,0 +1,46 @@
+{
+  "name": "markdown-preview-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@fluentui/react-components": "^9.66.7",
+    "@headlessui/react": "^2.2.4",
+    "core-js": "^3.44.0",
+    "docx": "^9.5.1",
+    "html2pdf.js": "^0.10.3",
+    "lucide-react": "^0.300.0",
+    "next": "^15.3.5",
+    "prettier": "^3.6.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-markdown": "^9.0.0",
+    "react-syntax-highlighter": "^15.6.1",
+    "refractor": "^5.0.0",
+    "rehype-highlight": "^7.0.0",
+    "rehype-raw": "^7.0.0",
+    "rehype-sanitize": "^6.0.0",
+    "remark-breaks": "^4.0.0",
+    "remark-gfm": "^4.0.0",
+    "zustand": "^4.4.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.11",
+    "@tailwindcss/typography": "^0.5.12",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/react-syntax-highlighter": "^15.5.0",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^9.31.0",
+    "eslint-config-next": "15.0.0",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.4.3",
+    "typescript": "^5.8.3"
+  }
+}

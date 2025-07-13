@@ -1,0 +1,38 @@
+{
+    "name": "markdown-preview",
+    "version": "1.0.0",
+    "description": "A beautiful markdown preview editor with Rust backend and Next.js frontend",
+    "scripts": {
+        "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+        "dev:backend": "cd . && cargo run",
+        "dev:frontend": "cd frontend && npm run dev",
+        "build": "npm run build:backend && npm run build:frontend",
+        "build:backend": "cargo build --release",
+        "build:frontend": "cd frontend && npm run build",
+        "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+        "start:backend": "cargo run --release",
+        "start:frontend": "cd frontend && npm start",
+        "install:all": "npm run install:frontend",
+        "install:frontend": "cd frontend && npm install",
+        "clean": "npm run clean:backend && npm run clean:frontend",
+        "clean:backend": "cargo clean",
+        "clean:frontend": "cd frontend && rm -rf .next node_modules",
+        "test": "npm run test:backend && npm run test:frontend",
+        "test:backend": "cargo test",
+        "test:frontend": "cd frontend && npm test"
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.0"
+    },
+    "keywords": [
+        "markdown",
+        "preview",
+        "editor",
+        "rust",
+        "nextjs",
+        "typescript",
+        "fluent-ui"
+    ],
+    "author": "Markdown Preview Team",
+    "license": "MIT"
+}
