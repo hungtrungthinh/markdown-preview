@@ -1,37 +1,68 @@
 use axum::{
     extract::Json,
     http::{Method, StatusCode},
-    response::Html,
+    response::{Html, Json as JsonResponse},
     routing::{get, post},
     Router,
 };
+use axum_extra::routing::SpaRouter;
 use pulldown_cmark::{html, Options, Parser};
 use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
 use tower_http::cors::{Any, CorsLayer};
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+use tower_http::services::ServeDir;
 
-#[derive(Debug, Deserialize)]
+#[derive(Deserialize)]
 struct MarkdownRequest {
     content: String,
     theme: Option<String>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Serialize)]
 struct MarkdownResponse {
     html: String,
     error: Option<String>,
 }
 
+#[derive(Serialize)]
+struct HealthResponse {
+    status: String,
+    service: String,
+}
+
+async fn convert_markdown(Json(payload): Json<MarkdownRequest>) -> JsonResponse<MarkdownResponse> {
+    let options = Options::all();
+    let parser = Parser::new_ext(&payload.content, options);
+    let mut html_output = String::new();
+    html::push_html(&mut html_output, parser);
+
+    // Apply theme-specific styling if provided
+    let html_with_theme = if let Some(theme) = payload.theme {
+        format!(
+            r#"<div class="markdown-content theme-{}">{}</div>"#,
+            theme, html_output
+        )
+    } else {
+        format!(r#"<div class="markdown-content">{}</div>"#, html_output)
+    };
+
+    JsonResponse(MarkdownResponse {
+        html: html_with_theme,
+        error: None,
+    })
+}
+
+async fn health_check() -> JsonResponse<HealthResponse> {
+    JsonResponse(HealthResponse {
+        status: "healthy".to_string(),
+        service: "markdown-preview-backend".to_string(),
+    })
+}
+
 #[tokio::main]
 async fn main() {
-    // Initialize tracing
-    tracing_subscriber::registry()
-        .with(tracing_subscriber::EnvFilter::new(
-            std::env::var("RUST_LOG").unwrap_or_else(|_| "info".into()),
-        ))
-        .with(tracing_subscriber::fmt::layer())
-        .init();
+    // Initialize logging
+    env_logger::init();
 
     // Configure CORS
     let cors = CorsLayer::new()
@@ -39,51 +70,20 @@ async fn main() {
         .allow_origin(Any)
         .allow_headers(Any);
 
-    // Build our application with a route
+    // Create router
     let app = Router::new()
-        .route("/", get(root))
         .route("/api/convert", post(convert_markdown))
         .route("/health", get(health_check))
+        .nest_service("/", ServeDir::new("frontend/.next/static"))
         .layer(cors);
 
-    // Run it
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3001));
-    tracing::info!("listening on {}", addr);
-    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
-    axum::serve(listener, app).await.unwrap();
-}
+    // Bind to address
+    let addr = SocketAddr::from(([0, 0, 0, 0], 3001));
+    println!("🚀 Markdown Preview Backend starting on {}", addr);
 
-async fn root() -> Html<&'static str> {
-    Html("<h1>Markdown Preview Backend</h1><p>API is running!</p>")
-}
-
-async fn health_check() -> (StatusCode, Json<serde_json::Value>) {
-    (
-        StatusCode::OK,
-        Json(serde_json::json!({
-            "status": "healthy",
-            "service": "markdown-preview-backend"
-        })),
-    )
-}
-
-async fn convert_markdown(
-    Json(payload): Json<MarkdownRequest>,
-) -> (StatusCode, Json<MarkdownResponse>) {
-    let mut options = Options::empty();
-    options.insert(Options::ENABLE_TABLES);
-    options.insert(Options::ENABLE_FOOTNOTES);
-    options.insert(Options::ENABLE_STRIKETHROUGH);
-    options.insert(Options::ENABLE_TASKLISTS);
-    options.insert(Options::ENABLE_HEADING_ATTRIBUTES);
-
-    let parser = Parser::new_ext(&payload.content, options);
-    let mut html_output = String::new();
-    html::push_html(&mut html_output, parser);
-
-    let response = MarkdownResponse {
-        html: html_output,
-        error: None,
-    };
-    (StatusCode::OK, Json(response))
+    // Start server
+    axum::Server::bind(&addr)
+        .serve(app.into_make_service())
+        .await
+        .unwrap();
 }
