@@ -1,0 +1,89 @@
+name: Build and Release Rust Backend
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            asset_name: markdown-preview-backend-linux-x86_64
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+            asset_name: markdown-preview-backend-linux-aarch64
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            asset_name: markdown-preview-backend-macos-x86_64
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            asset_name: markdown-preview-backend-macos-aarch64
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            asset_name: markdown-preview-backend-windows-x86_64.exe
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Set up Rust toolchain
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: ${{ matrix.target }}
+          override: true
+
+      # Install dependencies for cross-compilation (Linux ARM64)
+      - name: Install ARM64 cross-compiler (Linux)
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu
+
+      # Build the backend
+      - name: Build backend
+        run: cargo build --release --target ${{ matrix.target }}
+
+      # Create release package
+      - name: Package binary
+        run: |
+          if [[ "${{ matrix.target }}" == *"windows"* ]]; then
+            # Windows executable
+            cp target/${{ matrix.target }}/release/markdown-preview-backend.exe ${{ matrix.asset_name }}
+            tar czvf ${{ matrix.asset_name }}.tar.gz ${{ matrix.asset_name }} README.md Cargo.toml .env.example
+          else
+            # Unix executable
+            cp target/${{ matrix.target }}/release/markdown-preview-backend ${{ matrix.asset_name }}
+            tar czvf ${{ matrix.asset_name }}.tar.gz ${{ matrix.asset_name }} README.md Cargo.toml .env.example
+          fi
+
+      # Upload as artifact
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset_name }}
+          path: ${{ matrix.asset_name }}.tar.gz
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            markdown-preview-backend-linux-x86_64.tar.gz
+            markdown-preview-backend-linux-aarch64.tar.gz
+            markdown-preview-backend-macos-x86_64.tar.gz
+            markdown-preview-backend-macos-aarch64.tar.gz
+            markdown-preview-backend-windows-x86_64.exe.tar.gz
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
