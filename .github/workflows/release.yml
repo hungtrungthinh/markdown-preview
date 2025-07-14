@@ -88,4 +88,4 @@ jobs:
             markdown-preview-backend-windows-x86_64.exe.tar.gz
           generate_release_notes: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }} 
