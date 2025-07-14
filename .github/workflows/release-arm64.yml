@@ -1,0 +1,41 @@
+name: Build and Release ARM64 Binary
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Set up Rust toolchain for ARM64
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: aarch64-unknown-linux-gnu
+          override: true
+
+      # Install ARM64 cross-compiler
+      - name: Install ARM64 cross-compiler
+        run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu
+
+      # Build the backend for ARM64
+      - name: Build for ARM64
+        run: cargo build --release --target aarch64-unknown-linux-gnu
+
+      # Package the binary and any configs you want to include
+      - name: Package binary
+        run: tar czvf markdown-preview-backend-arm64.tar.gz target/aarch64-unknown-linux-gnu/release/markdown-preview-backend README.md Cargo.toml .env.example
+
+      # Upload the binary as a release asset
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: markdown-preview-backend-arm64.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
