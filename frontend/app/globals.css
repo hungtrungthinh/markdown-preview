@@ -66,56 +66,74 @@ main {
   @apply prose prose-slate max-w-none w-full;
 }
 
-.markdown h1 {
-  @apply text-3xl font-bold mb-4 text-gray-900;
-}
-
-.markdown h2 {
-  @apply text-2xl font-semibold mb-3 text-gray-800;
-}
-
-.markdown h3 {
-  @apply text-xl font-semibold mb-2 text-gray-700;
-}
-
-.markdown p {
-  @apply mb-4 text-gray-700 leading-relaxed;
-}
-
-.markdown code {
-  @apply bg-gray-100 text-gray-800 px-1 py-0.5 rounded text-sm font-mono;
-}
-
-.markdown pre {
-  @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto mb-4;
-}
-
-.markdown pre code {
-  @apply bg-transparent text-gray-100 p-0;
-}
-
-.markdown blockquote {
-  @apply border-l-4 border-blue-500 pl-4 italic text-gray-600 mb-4;
-}
-
-.markdown ul,
-.markdown ol {
-  @apply mb-4 pl-6;
-}
-
-.markdown li {
-  @apply mb-1;
-}
-
 .markdown table {
-  @apply w-full border-collapse border border-gray-300 mb-4;
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0;
+  font-size: 1rem;
 }
 
 .markdown th,
 .markdown td {
-  @apply border border-gray-300 px-3 py-2 text-left;
+  border: 1px solid #e5e7eb;
+  padding: 0.75em 1em;
+  text-align: left;
 }
 
 .markdown th {
-  @apply bg-gray-100 font-semibold;
+  background: #f3f4f6;
+  font-weight: 700;
+  color: #111827;
+}
+
+.markdown td {
+  background: #fff;
+  color: #1f2937;
+}
+
+.markdown tr {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.markdown a {
+  color: #2563eb;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+@keyframes fade-in-out {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+
+  10% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  90% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+}
+
+.animate-fade-in-out {
+  animation: fade-in-out 2s both;
+}
+
+.no-border {
+  border: none !important;
+  background: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  outline: none !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
 }

@@ -1,22 +1,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    // Enable standalone output for Docker
-    outputStandalone: true,
+  output: 'standalone',
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://localhost:3001/api/:path*',
+      },
+    ];
   },
-  // Disable telemetry
-  telemetry: false,
-  // Enable static exports if needed
   trailingSlash: true,
-  // Optimize images
   images: {
     unoptimized: true,
   },
-  // Environment variables
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
   },
-  // Headers for security
   async headers() {
     return [
       {
@@ -36,7 +35,7 @@ const nextConfig = {
           },
         ],
       },
-    ]
+    ];
   },
 };
 

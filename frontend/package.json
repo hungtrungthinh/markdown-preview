@@ -14,6 +14,7 @@
     "core-js": "^3.44.0",
     "docx": "^9.5.1",
     "html2pdf.js": "^0.10.3",
+    "katex": "^0.16.22",
     "lucide-react": "^0.300.0",
     "next": "^15.3.5",
     "prettier": "^3.6.2",
@@ -23,10 +24,12 @@
     "react-syntax-highlighter": "^15.6.1",
     "refractor": "^5.0.0",
     "rehype-highlight": "^7.0.0",
+    "rehype-katex": "^7.0.1",
     "rehype-raw": "^7.0.0",
     "rehype-sanitize": "^6.0.0",
     "remark-breaks": "^4.0.0",
     "remark-gfm": "^4.0.0",
+    "remark-math": "^6.0.0",
     "zustand": "^4.4.0"
   },
   "devDependencies": {
