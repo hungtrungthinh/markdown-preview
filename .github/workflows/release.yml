@@ -54,11 +54,11 @@ jobs:
           if [[ "${{ matrix.target }}" == *"windows"* ]]; then
             # Windows executable
             cp target/${{ matrix.target }}/release/markdown-preview-backend.exe ${{ matrix.asset_name }}
-            tar czvf ${{ matrix.asset_name }}.tar.gz ${{ matrix.asset_name }} README.md Cargo.toml .env.example
+            tar czvf ${{ matrix.asset_name }}.tar.gz ${{ matrix.asset_name }} README.md Cargo.toml env.example
           else
             # Unix executable
             cp target/${{ matrix.target }}/release/markdown-preview-backend ${{ matrix.asset_name }}
-            tar czvf ${{ matrix.asset_name }}.tar.gz ${{ matrix.asset_name }} README.md Cargo.toml .env.example
+            tar czvf ${{ matrix.asset_name }}.tar.gz ${{ matrix.asset_name }} README.md Cargo.toml env.example
           fi
 
       # Upload as artifact
