@@ -76,16 +76,16 @@ jobs:
     steps:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: List downloaded files
+        run: ls -lhR ./artifacts
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            markdown-preview-backend-linux-x86_64.tar.gz
-            markdown-preview-backend-linux-aarch64.tar.gz
-            markdown-preview-backend-macos-x86_64.tar.gz
-            markdown-preview-backend-macos-aarch64.tar.gz
-            markdown-preview-backend-windows-x86_64.exe.tar.gz
+          files: ./artifacts/**/*.tar.gz
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }} 
